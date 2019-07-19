@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "984227482446",
+    "firebase_url": "https://fasthub-uitests.firebaseio.com",
+    "project_id": "fasthub-uitests",
+    "storage_bucket": "fasthub-uitests.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984227482446:android:252ebed559d45619",
+        "android_client_info": {
+          "package_name": "com.fastaccess.github.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984227482446-g6ajoiejsj9bm24i8gqlckn1h6c46ivs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6PXf5jpJ7f2t4yiolWDSTT-b76HHk4HM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984227482446-g6ajoiejsj9bm24i8gqlckn1h6c46ivs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

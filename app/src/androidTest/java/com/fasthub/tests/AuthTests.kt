@@ -1,6 +1,10 @@
 package com.fasthub.tests
 
+import android.content.Context
+import android.content.Intent
 import androidx.test.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.filters.SmallTest
 import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
@@ -25,7 +29,8 @@ const val BASIC_SAMPLE_PACKAGE = "com.fastaccess.github"
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class AuthTests() {
+@SmallTest
+class AuthTests {
     private lateinit var device: UiDevice
 
     @Before
@@ -41,31 +46,31 @@ class AuthTests() {
     }
 
     private fun runApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())!!
-//        device.pressHome()
-//        // Wait for launcher
-//        val launcherPackage: String = device.launcherPackageName
-//        assertThat(launcherPackage, IsNull.notNullValue())
-//        device.wait(
-//            Until.hasObject(By.pkg(launcherPackage).depth(0)),
-//            LAUNCH_TIMEOUT
-//        )
-//
-//        // Launch the app
-//        val context = ApplicationProvider.getApplicationContext<Context>()
-//        val intent = context.packageManager.getLaunchIntentForPackage(
-//            BASIC_SAMPLE_PACKAGE
-//        )?.let {
-//            // Clear out any previous instances
-//            it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//        }
-//        context.startActivity(intent)
-//
-//        // Wait for the app to appear
-//        device.wait(
-//            Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)),
-//            LAUNCH_TIMEOUT
-//        )
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device.pressHome()
+        // Wait for launcher
+        val launcherPackage: String = device.launcherPackageName
+        assertThat(launcherPackage, IsNull.notNullValue())
+        device.wait(
+            Until.hasObject(By.pkg(launcherPackage).depth(0)),
+            LAUNCH_TIMEOUT
+        )
+
+        // Launch the app
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val intent = context.packageManager.getLaunchIntentForPackage(
+            BASIC_SAMPLE_PACKAGE
+        )?.let {
+            // Clear out any previous instances
+            it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        context.startActivity(intent)
+
+        // Wait for the app to appear
+        device.wait(
+            Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)),
+            LAUNCH_TIMEOUT
+        )
     }
 
     private fun changeWifiSettings(mode: Boolean) {
