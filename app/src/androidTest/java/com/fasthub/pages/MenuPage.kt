@@ -7,7 +7,9 @@ import com.fasthub.utils.findObjectById
 class MenuPage(device: UiDevice) {
     val txtUserName = device.findObjectById("com.fastaccess.github:id/navUsername")
     val tabMenu = device.findObject(UiSelector().className("android.support.v7.app.ActionBar\$Tab").index(0))
+        .getChild(UiSelector().className("android.widget.TextView").text("MENU"))
     val tabProfile = device.findObject(UiSelector().className("android.support.v7.app.ActionBar\$Tab").index(1))
+        .getChild(UiSelector().className("android.widget.TextView").text("PROFILE"))
     val btnHome = device.findObject(UiSelector().resourceId("com.fastaccess.github:id/design_menu_item_text").text("Home"))
     val btnProfile = device.findObject(UiSelector().resourceId("com.fastaccess.github:id/design_menu_item_text").text("Profile"))
     val btnOrganizations = device.findObject(UiSelector().resourceId("com.fastaccess.github:id/design_menu_item_text").text("Organizations"))
