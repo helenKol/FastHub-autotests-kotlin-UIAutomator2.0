@@ -4,6 +4,8 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.fasthub.utils.findObjectById
 import com.fasthub.utils.findObjectById2
+import org.hamcrest.CoreMatchers.*
+import org.hamcrest.MatcherAssert.assertThat
 
 class AuthPage(device: UiDevice) {
     val headerLaunch = device.findObjectById("com.fastaccess.github:id/mainCard")
@@ -22,6 +24,19 @@ class AuthPage(device: UiDevice) {
 
     val errUserName = headerUserName.getChild(UiSelector().className("android.widget.LinearLayout"))
         .getChild(UiSelector().resourceId("com.fastaccess.github:id/textinput_error"))
-    val errPassword = device.findObjectById("com.fastaccess.github:id/password").getChild(UiSelector().className("android.widget.LinearLayout"))
+    val errPassword = device.findObjectById("com.fastaccess.github:id/password")
+        .getChild(UiSelector().className("android.widget.LinearLayout"))
         .getChild(UiSelector().resourceId("com.fastaccess.github:id/textinput_error"))
+
+    fun check() {
+        assertThat(true, `is`(headerBasicAuth.exists()))
+        btnBasicAuth.clickAndWaitForNewWindow()
+        assertThat(true, `is`(headerUserName.text == "Username"))
+        assertThat(true, `is`(txtUserName.text.isEmpty()))
+        assertThat(true, `is`(txtUserName.isFocused))
+        assertThat(true, `is`(txtPassword.exists()))
+        assertThat(true, `is`(btnHidePassword.exists()))
+        assertThat(true, `is`(btnLogin.exists()))
+        assertThat(true, `is`(btnBrowserOpen.exists()))
+    }
 }

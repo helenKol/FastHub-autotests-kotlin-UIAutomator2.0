@@ -22,11 +22,10 @@ import org.junit.runners.MethodSorters
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.UiObjectNotFoundException
 
-
-
-
 const val LAUNCH_TIMEOUT: Long = 1_000L
 const val BASIC_SAMPLE_PACKAGE = "com.fastaccess.github"
+const val USER_LOGIN = "test@osinit.com"
+const val USER_PASSWORD = "Osinit4\$"
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -40,31 +39,28 @@ class AuthTests {
         logout()
     }
 
-    private fun logout() {
-        var authPage = AuthPage(device)
+     fun logout() {
+        val authPage = AuthPage(device)
         if (!authPage.headerBasicAuth.exists())
         {
-            //checkNavBar()
             val navBar = NavBar(device)
             assertThat(true, `is`(navBar.btnMenu.exists()))
             navBar.btnMenu.click()
-            val menuFrame = MenuPage(device)
+            val menuFrame = MenuPage()
             assertThat(true, `is`(menuFrame.tabMenu.exists()))
             assertThat(true, `is`(menuFrame.tabProfile.exists()))
             menuFrame.tabProfile.click()
             menuFrame.btnLogout.clickAndWaitForNewWindow()
             assertThat(false, `is`(menuFrame.tabMenu.exists()))
             val notify = NotifyFrame(device)
-            assertThat(true, `is`(notify.notifyTitle.text.equals("Logout")))
-            assertThat(true, `is`(notify.btnCancel.exists()))
-            assertThat(true, `is`(notify.btnSubmit.exists()))
+            notify.check("Logout")
             notify.btnSubmit.clickAndWaitForNewWindow()
-            authPage = AuthPage(device)
+            val authPage = AuthPage(device)
             assertThat(true, `is`(authPage.btnBasicAuth.exists()))
         }
     }
 
-    private fun runApp() {
+     fun runApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.pressHome()
         // Wait for launcher
@@ -93,32 +89,7 @@ class AuthTests {
     }
 
     private fun changeWifiSettings(mode: Boolean) {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        device.pressHome()
-        // Wait for launcher
-        val launcherPackage: String = device.launcherPackageName
-        assertThat(launcherPackage, IsNull.notNullValue())
-        device.wait(
-            Until.hasObject(By.pkg(launcherPackage).depth(0)),
-            LAUNCH_TIMEOUT
-        )
-
-        // Launch the app
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val intent = context.packageManager.getLaunchIntentForPackage(
-            BASIC_SAMPLE_PACKAGE
-        )?.let {
-            // Clear out any previous instances
-            it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
-        context.startActivity(intent)
-
-        // Wait for the app to appear
-        device.wait(
-            Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)),
-            LAUNCH_TIMEOUT
-        )
-
+        runApp()
 //        val wifi = context.getSystemService(Context.WIFI_SERVICE) //as WifiManager
 //        wifi.isWifiEnabled = mode
         setWifiSettingsOnDevice(mode)
@@ -128,7 +99,7 @@ class AuthTests {
     fun setWifiSettingsOnDevice(enabled: Boolean) {
         val wifiSwitchSelector = UiSelector().className(android.widget.Switch::class.java.name)
         val wifiSwitch = device.findObject(wifiSwitchSelector)
-        if (wifiSwitch.waitForExists(5000) && wifiSwitch.isEnabled) {
+        if (wifiSwitch.waitForExists(LAUNCH_TIMEOUT) && wifiSwitch.isEnabled) {
             if (wifiSwitch.isChecked != enabled) {
                 wifiSwitch.click()
             }
@@ -142,51 +113,28 @@ class AuthTests {
     @Test
     fun AlayoutTest(){
         val authPage = AuthPage(device)
-        assertThat(true, `is`(authPage.headerBasicAuth.exists()))
-        authPage.btnBasicAuth.clickAndWaitForNewWindow()
-        assertThat(true, `is`(authPage.headerUserName.text == "Username"))
-        assertThat(true, `is`(authPage.txtUserName.text.isEmpty()))
-        assertThat(true, `is`(authPage.txtUserName.isFocused))
-        assertThat(true, `is`(authPage.txtPassword.exists()))
-        assertThat(true, `is`(authPage.btnHidePassword.exists()))
-        assertThat(true, `is`(authPage.btnLogin.exists()))
-        assertThat(true, `is`(authPage.btnBrowserOpen.exists()))
+        authPage.check()
     }
 
     // C16894
     @Test
     fun BauthCorrect()
     {
-        enterAuthDataCorrect()
-        checkNavBar()
-        checkTabBar()
-    }
-
-    private fun checkTabBar() {
-        val tabBar = TabBar(device)
-        assertThat(true, `is`(tabBar.tabBar.exists()))
-        assertThat(true, `is`(tabBar.btnFeed.exists()))
-        assertThat(true, `is`(tabBar.btnIssues.exists()))
-        assertThat(true, `is`(tabBar.btnPullRequests.exists()))
-    }
-
-    private fun checkNavBar() {
+        login()
         val navBar = NavBar(device)
-        assertThat(true, `is`(navBar.navBar.exists()))
-        assertThat(true, `is`(navBar.btnMenu.exists()))
-        assertThat(true, `is`(navBar.txtTitle.exists()))
-        assertThat(true, `is`(navBar.btnNotify.exists()))
-        assertThat(true, `is`(navBar.btnSearch.exists()))
+        navBar.check()
+        val tabBar = TabBar(device)
+        tabBar.check()
     }
 
-    private fun enterAuthDataCorrect() {
+    private fun login() {
         val authPage = AuthPage(device)
         AlayoutTest()
-        authPage.txtUserName.setText("test@osinit.com")
-        authPage.txtPassword.setText("Osinit4\$")
+        authPage.txtUserName.setText(USER_LOGIN)
+        authPage.txtPassword.setText(USER_PASSWORD)
         assertThat(true, `is`(authPage.txtPassword.text.equals("••••••••")))
         authPage.btnHidePassword.click()
-        assertThat(true, `is`(authPage.txtPassword.text.equals("Osinit4\$")))
+        assertThat(true, `is`(authPage.txtPassword.text.equals(USER_PASSWORD)))
         authPage.btnLogin.clickAndWaitForNewWindow()
     }
 
@@ -197,19 +145,19 @@ class AuthTests {
         val authPage = AuthPage(device)
         AlayoutTest()
         authPage.txtUserName.setText("")
-        authPage.txtPassword.setText("Osinit4\$1")
+        authPage.txtPassword.setText(USER_PASSWORD)
         authPage.btnLogin.click()
         assertThat(true, `is`(authPage.errUserName.exists()))
         assertThat(true, `is`(authPage.headerBasicAuth.exists()))
 
-        authPage.txtUserName.setText("test@osinit.com")
+        authPage.txtUserName.setText(USER_LOGIN)
         authPage.txtPassword.setText("")
         authPage.btnLogin.click()
         assertThat(true, `is`(authPage.errPassword.exists()))
         assertThat(true, `is`(authPage.headerBasicAuth.exists()))
 
-        authPage.txtUserName.setText("tes1t@osinit.com")
-        authPage.txtPassword.setText("Osinit4\$")
+        authPage.txtUserName.setText(USER_LOGIN)
+        authPage.txtPassword.setText(USER_PASSWORD)
         assertThat(true, `is`(authPage.headerBasicAuth.exists()))
     }
 
@@ -230,8 +178,10 @@ class AuthTests {
         // свернуть приложение
         device.pressHome()
         runApp()
-        checkNavBar()
-        checkTabBar()
+        val navBar = NavBar(device)
+        navBar.check()
+        val tabBar = TabBar(device)
+        tabBar.check()
         logout()
         AlayoutTest()
     }
@@ -244,9 +194,11 @@ class AuthTests {
         changeWifiSettings(false)
         runApp()
         logout()
-        enterAuthDataCorrect()
-        checkNavBar()
-        checkTabBar()
+        login()
+        val navBar = NavBar(device)
+        navBar.check()
+        val tabBar = TabBar(device)
+        tabBar.check()
         changeWifiSettings(true)
     }
 }

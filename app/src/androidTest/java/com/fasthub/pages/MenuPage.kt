@@ -1,11 +1,15 @@
 package com.fasthub.pages
 
+import androidx.test.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.fasthub.utils.findObjectById
+import org.hamcrest.CoreMatchers.*
+import org.hamcrest.MatcherAssert.*
 
-class MenuPage(device: UiDevice) {
-    val txtUserName = device.findObjectById("com.fastaccess.github:id/navUsername")
+class MenuPage {
+    private var device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
     val tabMenu = device.findObject(UiSelector().className("android.support.v7.app.ActionBar\$Tab").index(0))
         .getChild(UiSelector().className("android.widget.TextView").text("MENU"))
     val tabProfile = device.findObject(UiSelector().className("android.support.v7.app.ActionBar\$Tab").index(1))
@@ -26,4 +30,43 @@ class MenuPage(device: UiDevice) {
     val btnRepositories = device.findObjectById("com.fastaccess.github:id/repos")
     val btnStarted = device.findObjectById("com.fastaccess.github:id/starred")
     val btnProfilePinned = device.findObjectById("com.fastaccess.github:id/togglePinned")
+
+    inner class toolBar{
+        val imgAvatar = device.findObjectById("com.fastaccess.github:id/avatar")
+        val txtFullName = device.findObjectById("com.fastaccess.github:id/navFullName")
+        val txtUserName = device.findObjectById("com.fastaccess.github:id/navUsername")
+
+        fun check(){
+            assertThat(true, `is`(imgAvatar.exists()))
+            assertThat(true, `is`(txtFullName.exists()))
+            assertThat(true, `is`(txtUserName.exists()))
+            assertThat(true, `is`(txtUserName.text.isNotEmpty()))
+        }
+    }
+
+    fun check(){
+        toolBar().check()
+
+        assertThat(true, `is`(tabMenu.exists()))
+        tabMenu.click()
+        assertThat(true, `is`(tabMenu.isSelected))
+        assertThat(true, `is`(btnHome.exists()))
+        assertThat(true, `is`(btnProfile.exists()))
+        assertThat(true, `is`(btnOrganizations.exists()))
+        assertThat(true, `is`(btnNotifications.exists()))
+        assertThat(true, `is`(btnPinned.exists()))
+        assertThat(true, `is`(btnTrending.exists()))
+        assertThat(true, `is`(btnGists.exists()))
+        assertThat(true, `is`(btnReport.exists()))
+        assertThat(true, `is`(btnFAQ.exists()))
+
+        assertThat(true, `is`(tabProfile.exists()))
+        tabProfile.click()
+        assertThat(true, `is`(tabProfile.isSelected))
+        assertThat(true, `is`(btnLogout.exists()))
+        assertThat(true, `is`(btnAddAccount.exists()))
+        assertThat(true, `is`(btnRepositories.exists()))
+        assertThat(true, `is`(btnStarted.exists()))
+        assertThat(true, `is`(btnProfilePinned.exists()))
+    }
 }
